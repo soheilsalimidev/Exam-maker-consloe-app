@@ -1,0 +1,3 @@
+C:/Users/Soheil Salimi/Documents/TA/project/cmake-build-debug/CMakeFiles/project.dir
+C:/Users/Soheil Salimi/Documents/TA/project/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Soheil Salimi/Documents/TA/project/cmake-build-debug/CMakeFiles/rebuild_cache.dir

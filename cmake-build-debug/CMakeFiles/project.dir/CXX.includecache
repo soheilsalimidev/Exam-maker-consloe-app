@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Soheil Salimi/Documents/TA/project/main.cpp
+iostream
+-
+fstream
+-
+string
+-
+chrono
+-
+algorithm
+-
+ctime
+-
+

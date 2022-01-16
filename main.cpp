@@ -27,6 +27,10 @@ person User;
 
 int Now();
 
+void showUsersList();
+
+void BubbleSortPersonById(vector<person> &array);
+
 void searchData(const string &userName, const string &password);
 
 void addNewUser(const string &role);
@@ -41,7 +45,7 @@ void takeExam();
 
 double calPerson(int correct, int wrong, int q);
 
-void examResult();
+void examResult(const string &role);
 
 void newExam();
 
@@ -68,6 +72,7 @@ void login() {
     else searchData(username, password);
 }
 
+//search for user for logging
 void searchData(const string &userName, const string &password) {
     string lines;
     ifstream DataBase("DataBaseUsers.txt");
@@ -114,13 +119,22 @@ void searchData(const string &userName, const string &password) {
     } else cout << "Unable to open file";
 }
 
+//admin dashboard
 void adminActions() {
     cout << "========= [Welcome admin...] =========\n\n";
-    cout << "type 1 if you want to add new Professor \ntype 2 if you want to add new student \ntype 3 to exit\n";
+    cout << "1) add new Professor \n"
+            "2) add new student\n"
+            "3) users list \n"
+            "4) exam list\n"
+            "5) result of exam list"
+            "6) exit\n";
     int command;
     cin >> command;
     if (command == 1) addNewUser("pro");
     else if (command == 2)addNewUser("stu");
+    else if (command == 3)showUsersList();
+    else if (command == 4) examList("admin");
+    else if (command == 5) examResult("admin");
     else {
         cout << "Have Nice Day :) \n";
         system("pause");
@@ -128,6 +142,44 @@ void adminActions() {
     }
 }
 
+//show list of users and order them by their ID
+void showUsersList() {
+    system("cls");
+    string lines;
+    ifstream usersDB("DataBaseUsers.txt");
+    cout << "------------------------------------------------------------\n"
+            "            [ Id(ordered by) | Username | role ]           \n";
+    vector<person> users;
+    while (getline(usersDB, lines)) {
+        stringstream ss(lines);
+        string word;
+        int i = 0;
+        person user;
+        while (ss >> word) {
+            switch (i) {
+                case 0:
+                    user.userName = word;
+                    break;
+                case 2:
+                    user.id = word;
+                    break;
+                case 3:
+                    user.role = word;
+            }
+            i++;
+        }
+        users.push_back(user);
+    }
+    BubbleSortPersonById(users);
+
+    for (const person &user: users)
+        cout << "| " << user.id << " " << user.userName << " " << user.role << "\n";
+
+    cout << "------------------------------------------------------------\n";
+    adminActions();
+}
+
+//student dashboard
 void studentAction() {
     cout << "========= [Welcome student " << User.userName << "] =========\n\n";
     cout << "type 1 if you want to see list of exams \ntype 2 if you want to take exam \ntype 3 to exit\n";
@@ -142,6 +194,7 @@ void studentAction() {
     }
 }
 
+//Professor dashboard
 void ProfessorAction() {
     cout << "========= [Welcome Professor " + User.userName + "] =========\n\n";
     cout << "type 1 if you want to add new exam"
@@ -152,7 +205,7 @@ void ProfessorAction() {
     cin >> command;
     if (command == 1) newExam();
     else if (command == 2)examList();
-    else if (command == 3) examResult();
+    else if (command == 3) examResult("pro");
     else {
         cout << "Have Nice Day :) \n";
         system("pause");
@@ -160,6 +213,7 @@ void ProfessorAction() {
     }
 }
 
+// show exam list and role prams define who wants to see it admin or professor or student
 void examList(const string &role) {
     string lines;
     ifstream ExamDataBase("exams.txt");
@@ -185,7 +239,7 @@ void examList(const string &role) {
                     break;
                 }
                 cout << "    exam number " << stoi(lines) << " with " << qNum << " question" << " and " << time
-                     << " min time start at " << startDate << " and edn at " << EndDate << "\n";
+                     << " min time start at " << startDate << " and end at " << EndDate << "\n";
             }
         }
         ExamDataBase.close();
@@ -193,9 +247,11 @@ void examList(const string &role) {
     cout << "-------------------------------------------------------------------------------\n";
 
     if (role == "pro") ProfessorAction();
+    else if (role == "admin") adminActions();
     else studentAction();
 }
 
+//add new exam
 void newExam() {
     string lines;
     ifstream ExamDataBase("exams.txt");
@@ -254,7 +310,8 @@ void newExam() {
 
 }
 
-void examResult() {
+// see exam result and role prams define who wants to see it admin or professor
+void examResult(const string &role) {
     int examId;
     cout << "which Exam do you want to see the result ? \n";
     cin >> examId;
@@ -265,9 +322,11 @@ void examResult() {
     if (ExamDataBase.is_open())
         while (getline(ExamDataBase, lines)) cout << lines << "%\n";
     cout << "-------------------------------------------------------------------------------\n";
-    ProfessorAction();
+    if (role == "pro") ProfessorAction();
+    else if (role == "admin") adminActions();
 }
 
+// take exam by student
 void takeExam() {
     int examId;
     cout << "which Exam do you want to take ? \n";
@@ -313,16 +372,16 @@ void takeExam() {
             if (ExamDataBase.is_open()) {
                 int i = 1;
                 while (getline(ExamDataBase, lines)) {
-                        system("cls");
-                        int qAns;
-                        cout << i << "/" << qNum << "\n";
-                        questionsStr qus = splitQuestion(lines);
-                        cout << qus.question << "\n1. " << qus.op1 << "\n2." << qus.op2 <<
-                             "\n3. " << qus.op3 << "\n4. " << qus.op4 << "\n";
-                        cin >> qAns;
-                        if (qAns == qus.correctAns)
-                            ansCorrect++;
-                        else ansWrong++;
+                    system("cls");
+                    int qAns;
+                    cout << i << "/" << qNum << "\n";
+                    questionsStr qus = splitQuestion(lines);
+                    cout << qus.question << "\n1. " << qus.op1 << "\n2." << qus.op2 <<
+                         "\n3. " << qus.op3 << "\n4. " << qus.op4 << "\n";
+                    cin >> qAns;
+                    if (qAns == qus.correctAns)
+                        ansCorrect++;
+                    else ansWrong++;
                     i++;
                 }
                 break;
@@ -346,6 +405,7 @@ void takeExam() {
     studentAction();
 }
 
+//add new user witch role param define the role of user that can be student or professor
 void addNewUser(const string &role) {
     string username, password, Id;
     cout << "inter user username: \n";
@@ -365,6 +425,7 @@ void addNewUser(const string &role) {
     adminActions();
 }
 
+//split questions from one line string to questionsStr structure
 questionsStr splitQuestion(const string &str) {
     stringstream ss(str);
     questionsStr qus;
@@ -400,10 +461,12 @@ questionsStr splitQuestion(const string &str) {
     return qus;
 }
 
+//calculate score of exam with minus point
 double calPerson(int correct, int wrong, int q) {
     return ((((double) correct * 3) - (double) wrong) / ((double) q * 3)) * 100;
 }
 
+//gets today date as int
 int Now() {
     time_t now = time(0);
     struct tm tstruct{};
@@ -411,4 +474,20 @@ int Now() {
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%Y%m%d", &tstruct);
     return stoi(buf);
+}
+
+//Swap for sorting
+void Swap(person *a, person *b) {
+    person temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void BubbleSortPersonById(vector<person> &array) {
+    for (int i = 0; i < array.size(); i++) {
+        for (int j = 0; j < array.size() - 1; j++) {
+            if (array[j].id > array[j + 1].id)
+                Swap(&array[j], &array[j + 1]);
+        }
+    }
 }

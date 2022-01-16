@@ -1,2 +1,0 @@
-so has 1 right answer and 0 wrong answer and user grade is 50
-so has 1 right answer and 1 wrong answer and user grade is 33.3333

@@ -51,6 +51,8 @@ void newExam();
 
 void login();
 
+void studentExamResult();
+
 questionsStr splitQuestion(const string &str);
 
 void examList(const string &role = "pro");
@@ -126,7 +128,7 @@ void adminActions() {
             "2) add new student\n"
             "3) users list \n"
             "4) exam list\n"
-            "5) result of exam list"
+            "5) result of exam list\n"
             "6) exit\n";
     int command;
     cin >> command;
@@ -182,11 +184,15 @@ void showUsersList() {
 //student dashboard
 void studentAction() {
     cout << "========= [Welcome student " << User.userName << "] =========\n\n";
-    cout << "type 1 if you want to see list of exams \ntype 2 if you want to take exam \ntype 3 to exit\n";
+    cout << "1) list of exams\n"
+            "2) take exam\n"
+            "3) see exam result\n"
+            "4) exit\n";
     int command;
     cin >> command;
     if (command == 1) examList("stu");
     else if (command == 2) takeExam();
+    else if (command == 3) studentExamResult();
     else {
         cout << "Have Nice Day :) \n";
         system("pause");
@@ -324,6 +330,31 @@ void examResult(const string &role) {
     cout << "-------------------------------------------------------------------------------\n";
     if (role == "pro") ProfessorAction();
     else if (role == "admin") adminActions();
+}
+
+// see exam result for student
+void studentExamResult() {
+    int examId;
+    cout << "which Exam do you want to see the result ? \n";
+    cin >> examId;
+    string lines;
+    ifstream ExamDataBase(("AnsDataBaseExam" + to_string(examId) + ".txt"));
+    system("cls");
+    cout << "-------------------------------------------------------------------------------\n";
+    if (ExamDataBase.is_open())
+        while (getline(ExamDataBase, lines)) {
+            istringstream iss(lines);
+            string username;
+            while (getline(iss, username, ' ')){
+                if (username == User.userName){
+                    cout << lines << "\n";
+                    break;
+                }
+            }
+
+        }
+    cout << "-------------------------------------------------------------------------------\n";
+    studentAction();
 }
 
 // take exam by student
